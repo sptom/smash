@@ -1,7 +1,7 @@
 /*
  * jobs.h
  *
- *  Created on: 17 áàôø 2015
+ *  Created on: 17 ï¿½ï¿½ï¿½ï¿½ 2015
  *      Author: Dehu
  */
 
@@ -30,5 +30,5 @@ char* find_job_name(pJob head, int target_PID);
 int get_last_suspended_job_pid(pJob head);
 int unsuspend(pJob head,int target_PID);
 void destroy_list(pJob * job_list_head_ptr);
-void kill_jobs(pJob job_list_head);
+int kill_jobs(pJob job_list_head);
 #endif /* JOBS_H_ */

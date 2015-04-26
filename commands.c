@@ -245,11 +245,15 @@ int ExeCmd(pJob* head, char* lineSize, char* cmdString)
 			destroy_list(head);
 	   		exit(0);
 		}
-		else if(!strcmp(args[1], "kill"))
+		else if (!strcmp(args[1], "kill"))
 		{
-			kill_jobs(*head);
-			destroy_list(head);
-			exit(0);
+			if (kill_jobs(*head) != -1) {
+				destroy_list(head);
+				exit(0);
+			}
+			else {
+				exit (-1);
+			}
 		}
 		else
 			perror("smash error: > quit called with illegal argument\n");

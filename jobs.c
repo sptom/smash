@@ -4,6 +4,7 @@
  *  Created on: 17 ���� 2015
  *      Author: Dehu
  */
+#include <sys/wait.h>
 #include "jobs.h"
 
 struct job {
@@ -200,20 +201,43 @@ int unsuspend(pJob head, int target_PID) {
     return -3; // suspension has junk value (something is very wrong)
 }
 
-void kill_jobs(pJob job_list_head) {
+#if 0
+int status;
+pid_t return_pid = waitpid(process_id, &status, WNOHANG); /* WNOHANG def'd in wait.h */
+if (return_pid == -1) {
+    /* error */
+} else if (return_pid == 0) {
+    /* child is still running */
+} else if (return_pid == process_id) {
+    /* child is finished. exit status in   status */
+}
+
+#endif
+
+int kill_jobs(pJob job_list_head) {
     pJob current = job_list_head;
+    int status, return_pid;
     while (current != NULL) {
         printf("[%d] %s - Sending SIGTERM...", current->jobID, current->job_name);
         kill(current->PID, SIGTERM);
         sleep(5);
-        if (kill((current->PID), 0) == 0) {
-            //Meaning SIGTERM didn't work
+        return_pid = waitpid(current->PID, &status, WNOHANG);
+        if (return_pid == -1)
+        {
+            /*Error has occurred*/
+            destroy_list(job_list_head);
+            return -1;
+        } else if (return_pid == 0)
+        {
+            /*process is still running, SIGTERM didn't work*/
             printf(" (5 sec passed) Sending SIGKILL...");
             kill(current->PID, SIGKILL);
         }
+
         printf(" Done.\n");
         current = current->pNext;
     }
+    return 0;
 }
 
 void destroy_list(pJob *job_list_head_ptr) {
